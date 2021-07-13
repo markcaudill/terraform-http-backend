@@ -1,6 +1,8 @@
 terraform-http-backend
 ======================
 
+[![codecov](https://codecov.io/gh/markcaudill/terraform-http-backend/branch/main/graph/badge.svg?token=30GVL6J8HQ)](https://codecov.io/gh/markcaudill/terraform-http-backend)
+
 Description
 -----------
 
