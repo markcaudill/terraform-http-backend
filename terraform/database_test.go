@@ -13,7 +13,7 @@ func TestUpsertState(t *testing.T) {
 		schema         *StateSchema = DefaultStateSchema()
 		stateID        string       = "a5a5a5a5"
 		expectedOutput string       = fmt.Sprintf(
-			"INSERT INTO %s (%s,%s,%s) VALUES (?,?,?) ON CONFLICT(%s) SET %s = ?, %s = ?",
+			"INSERT INTO %s (%s,%s,%s) VALUES (?,?,?) ON CONFLICT(%s) DO UPDATE SET %s = ?, %s = ?",
 			schema.TableName, schema.IDColumnName, schema.DataColumnName, schema.LockColumnName,
 			schema.IDColumnName, schema.DataColumnName, schema.LockColumnName)
 		actualOutput string
