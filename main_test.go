@@ -125,28 +125,28 @@ func TestOpenDB(t *testing.T) {
 			terraform.DefaultStateSchema(),
 			func(db *sql.DB) {
 				if db == nil {
-					t.Fatal("got nil, expected !nil")
+					t.Error("got nil, expected !nil")
 				}
 			},
 			func(err error) {
 				if err != nil {
-					t.Fatalf("got %v, expected nil", err)
+					t.Errorf("got %v, expected nil", err)
 				}
 			},
 			func() {
 				os.Remove("test.db")
 			},
 		},
-		{"bad file path", "/:$#.db",
+		{"generate error", "test.db?_txlock=bogus",
 			terraform.DefaultStateSchema(),
 			func(db *sql.DB) {
 				if db != nil {
-					t.Fatalf("got %v, expected nil", db)
+					t.Errorf("got %v, expected nil", db)
 				}
 			},
 			func(err error) {
 				if err == nil {
-					t.Fatal("got nil, expected !nil")
+					t.Error("got nil, expected !nil")
 				}
 			},
 			func() {},
@@ -156,8 +156,8 @@ func TestOpenDB(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			defer tc.cleanup()
 			db, err := openDB(tc.path, tc.schema)
-			tc.dbValidator(db)
 			tc.errValidator(err)
+			tc.dbValidator(db)
 		})
 	}
 }
