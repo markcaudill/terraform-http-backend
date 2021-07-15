@@ -23,7 +23,7 @@ digraph {
 	"Data: ...\nLock: ...":s -> "Data: ...\nLock: ...":s [label=GET, style=dotted];
 	"Data: ...\nLock: ...":e -> "Data: ...\nLock: ...":e [label=POST, style=dashed];
 	"Data: ...\nLock: ..."   -> "Data: ...\nLock: nil"   [label=UNLOCK];
-	"Data: ...\nLock: ..."   -> "Data: nil\nLock: ..."   [label=POST];
+	"Data: ...\nLock: ..."   -> "Data: nil\nLock: ..."   [label=DELETE];
 
 	{rank=same; "Data: nil\nLock: nil"; "Data: ...\nLock: nil"}
 	{rank=same; "Data: nil\nLock: ..."; "Data: ...\nLock: ..."}
