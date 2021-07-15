@@ -7,6 +7,8 @@ terraform-http-backend
 
 ![GitHub](https://img.shields.io/github/license/markcaudill/terraform-http-backend)
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/markcaudill/terraform-http-backend.svg)](https://pkg.go.dev/github.com/markcaudill/terraform-http-backend)
+
 Description
 -----------
 
