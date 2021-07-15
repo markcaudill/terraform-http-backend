@@ -1,0 +1,30 @@
+digraph {
+	node [
+		shape = "box";
+	];
+
+	edge [
+		minlen = "2";
+	];
+
+	"Data: nil\nLock: nil":n -> "Data: nil\nLock: nil":n [label=GET; style=dotted];
+	"Data: nil\nLock: nil"   -> "Data: ...\nLock: nil"   [label=POST];
+	"Data: nil\nLock: nil"   -> "Data: nil\nLock: ..."   [label=LOCK];
+
+	"Data: ...\nLock: nil":n -> "Data: ...\nLock: nil":n [label=GET, style=dotted];
+	"Data: ...\nLock: nil"   -> "Data: ...\nLock: nil"   [label=POST, style=dashed];
+	"Data: ...\nLock: nil"   -> "Data: nil\nLock: nil"   [label=DELETE];
+	"Data: ...\nLock: nil"   -> "Data: ...\nLock: ..."   [label=LOCK];
+
+	"Data: nil\nLock: ...":s -> "Data: nil\nLock: ...":s [label=GET, style=dotted];
+	"Data: nil\nLock: ..."   -> "Data: ...\nLock: ..."   [label=POST];
+	"Data: nil\nLock: ..."   -> "Data: nil\nLock: nil"   [label=UNLOCK];
+
+	"Data: ...\nLock: ...":s -> "Data: ...\nLock: ...":s [label=GET, style=dotted];
+	"Data: ...\nLock: ...":e -> "Data: ...\nLock: ...":e [label=POST, style=dashed];
+	"Data: ...\nLock: ..."   -> "Data: ...\nLock: nil"   [label=UNLOCK];
+	"Data: ...\nLock: ..."   -> "Data: nil\nLock: ..."   [label=POST];
+
+	{rank=same; "Data: nil\nLock: nil"; "Data: ...\nLock: nil"}
+	{rank=same; "Data: nil\nLock: ..."; "Data: ...\nLock: ..."}
+}
