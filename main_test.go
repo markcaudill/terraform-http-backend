@@ -189,6 +189,7 @@ func TestHTTPHandlers(t *testing.T) {
 		dbSetup                    func(*sql.DB) error
 		schema                     *terraform.StateSchema
 		requestMethod              string
+		requestPath                string
 		requestBody                []byte
 		expectedResponseStatusCode int
 		expectedResponseBody       []byte
@@ -199,6 +200,7 @@ func TestHTTPHandlers(t *testing.T) {
 			func(db *sql.DB) error { return nil },
 			terraform.DefaultStateSchema(),
 			http.MethodGet,
+			"/",
 			[]byte(""),
 			http.StatusOK,
 			[]byte(""),
@@ -209,6 +211,7 @@ func TestHTTPHandlers(t *testing.T) {
 			func(db *sql.DB) error { return nil },
 			terraform.DefaultStateSchema(),
 			"LOCK",
+			"/",
 			[]byte(`{"ID":"testlockid"}`),
 			200,
 			[]byte(""),
@@ -234,15 +237,54 @@ func TestHTTPHandlers(t *testing.T) {
 			},
 			terraform.DefaultStateSchema(),
 			"LOCK",
+			"/",
 			[]byte(`{"ID":"testlockid2"}`),
 			http.StatusLocked,
 			[]byte(`{"ID":"testlockid"}`),
+		},
+		{
+			"UNLOCK with empty state database",
+			":memory:",
+			func(db *sql.DB) error { return nil },
+			terraform.DefaultStateSchema(),
+			"UNLOCK",
+			"/?ID=testlockid",
+			[]byte(""),
+			200,
+			[]byte(""),
+		},
+		{
+			"UNLOCK with correct/matching lock in state database",
+			"test.db",
+			func(db *sql.DB) error {
+				_, err := terraform.DefaultStateSchema().
+					UpsertState(
+						&terraform.State{
+							Data: nil,
+							Lock: []byte(`{"ID":"testlockid"}`)},
+						GetStateID(
+							&http.Request{
+								URL: &url.URL{
+									Path: "/",
+								},
+							},
+							sha256.New())).
+					RunWith(db).Exec()
+				return err
+			},
+			terraform.DefaultStateSchema(),
+			"UNLOCK",
+			"/?ID=testlockid",
+			[]byte(""),
+			http.StatusOK,
+			[]byte(""),
 		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			db, err := openDB(tc.dbPath, tc.schema)
+			defer db.Close()
 			if err != nil {
 				t.Fatalf("openDB(): got %v, expected nil", err)
 			}
@@ -250,7 +292,7 @@ func TestHTTPHandlers(t *testing.T) {
 			if err != nil {
 				t.Fatalf("dbSetup(): got %v, expected nil", err)
 			}
-			req := httptest.NewRequest(tc.requestMethod, "/", bytes.NewReader(tc.requestBody))
+			req := httptest.NewRequest(tc.requestMethod, tc.requestPath, bytes.NewReader(tc.requestBody))
 			w := httptest.NewRecorder()
 			stateHandler(db, tc.schema)(w, req)
 			res := w.Result()
