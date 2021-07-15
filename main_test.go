@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"database/sql"
 	"hash"
@@ -158,6 +159,48 @@ func TestOpenDB(t *testing.T) {
 			db, err := openDB(tc.path, tc.schema)
 			tc.errValidator(err)
 			tc.dbValidator(db)
+		})
+	}
+}
+
+func TestHTTPHandlers(t *testing.T) {
+	tt := []struct {
+		name                       string
+		dbPath                     string
+		schema                     *terraform.StateSchema
+		requestMethod              string
+		requestBody                []byte
+		expectedResponseStatusCode int
+		expectedResponseBody       []byte
+	}{
+		{
+			"GET with empty state database",
+			":memory:",
+			terraform.DefaultStateSchema(),
+			"GET",
+			[]byte(""),
+			http.StatusOK,
+			[]byte(""),
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+			db, err := openDB(tc.dbPath, tc.schema)
+			if err != nil {
+				t.Fatalf("got %v, expected nil", err)
+			}
+			req := httptest.NewRequest(tc.requestMethod, "/", bytes.NewReader(tc.requestBody))
+			w := httptest.NewRecorder()
+			stateHandler(db, tc.schema)(w, req)
+			res := w.Result()
+			body, _ := io.ReadAll(res.Body)
+			if res.StatusCode != tc.expectedResponseStatusCode {
+				t.Errorf("got %d, expected %d", res.StatusCode, tc.expectedResponseStatusCode)
+			}
+			if string(body) != string(tc.expectedResponseBody) {
+				t.Errorf("got %s, expected %s", body, tc.expectedResponseBody)
+			}
 		})
 	}
 }
