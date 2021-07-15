@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"strings"
 	"testing"
@@ -167,6 +168,7 @@ func TestHTTPHandlers(t *testing.T) {
 	tt := []struct {
 		name                       string
 		dbPath                     string
+		dbSetup                    func(*sql.DB) error
 		schema                     *terraform.StateSchema
 		requestMethod              string
 		requestBody                []byte
@@ -176,11 +178,47 @@ func TestHTTPHandlers(t *testing.T) {
 		{
 			"GET with empty state database",
 			":memory:",
+			func(db *sql.DB) error { return nil },
 			terraform.DefaultStateSchema(),
-			"GET",
+			http.MethodGet,
 			[]byte(""),
 			http.StatusOK,
 			[]byte(""),
+		},
+		{
+			"LOCK with empty state database",
+			":memory:",
+			func(db *sql.DB) error { return nil },
+			terraform.DefaultStateSchema(),
+			"LOCK",
+			[]byte(`{"ID":"testlockid"}`),
+			200,
+			[]byte(""),
+		},
+		{
+			"LOCK with conflicting lock in state database",
+			"test.db",
+			func(db *sql.DB) error {
+				_, err := terraform.DefaultStateSchema().
+					UpsertState(
+						&terraform.State{
+							Data: nil,
+							Lock: []byte(`{"ID":"testlockid"}`)},
+						GetStateID(
+							&http.Request{
+								URL: &url.URL{
+									Path: "/",
+								},
+							},
+							sha256.New())).
+					RunWith(db).Exec()
+				return err
+			},
+			terraform.DefaultStateSchema(),
+			"LOCK",
+			[]byte(`{"ID":"testlockid2"}`),
+			http.StatusLocked,
+			[]byte(`{"ID":"testlockid"}`),
 		},
 	}
 
@@ -188,7 +226,11 @@ func TestHTTPHandlers(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			db, err := openDB(tc.dbPath, tc.schema)
 			if err != nil {
-				t.Fatalf("got %v, expected nil", err)
+				t.Fatalf("openDB(): got %v, expected nil", err)
+			}
+			err = tc.dbSetup(db)
+			if err != nil {
+				t.Fatalf("dbSetup(): got %v, expected nil", err)
 			}
 			req := httptest.NewRequest(tc.requestMethod, "/", bytes.NewReader(tc.requestBody))
 			w := httptest.NewRecorder()
