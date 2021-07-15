@@ -5,6 +5,8 @@ terraform-http-backend
 
 ![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/markcaudill/terraform-http-backend)
 
+![GitHub](https://img.shields.io/github/license/markcaudill/terraform-http-backend)
+
 Description
 -----------
 
