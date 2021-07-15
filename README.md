@@ -2,11 +2,8 @@ terraform-http-backend
 ======================
 
 [![codecov](https://codecov.io/gh/markcaudill/terraform-http-backend/branch/main/graph/badge.svg?token=30GVL6J8HQ)](https://codecov.io/gh/markcaudill/terraform-http-backend)
-
 ![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/markcaudill/terraform-http-backend)
-
 ![GitHub](https://img.shields.io/github/license/markcaudill/terraform-http-backend)
-
 [![Go Reference](https://pkg.go.dev/badge/github.com/markcaudill/terraform-http-backend.svg)](https://pkg.go.dev/github.com/markcaudill/terraform-http-backend)
 
 Description
