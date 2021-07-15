@@ -64,10 +64,17 @@ func TestGetLockID(t *testing.T) {
 	}{
 		{
 			"good input",
-			`{"ID":"ebd786a4-fb72-f8ad-9705-d6ba623552c2","Operation":"OperationTypeApply","Info":"","Who":"mark@fry","Version":"1.0.1","Created":"2021-07-12T17:29:27.616435429Z","Path":""}`,
+			`{"ID":"ebd786a4-fb72-f8ad-9705-d6ba623552c2",
+			  "Operation":"OperationTypeApply",
+			  "Info":"",
+			  "Who":"mark@fry",
+			  "Version":"1.0.1",
+			  "Created":"2021-07-12T17:29:27.616435429Z",
+			  "Path":""}`,
 			func(str string) {
 				if str != `ebd786a4-fb72-f8ad-9705-d6ba623552c2` {
-					t.Errorf("got %v, expected %s", str, `ebd786a4-fb72-f8ad-9705-d6ba623552c2`)
+					t.Errorf("got %v, expected %s",
+						str, `ebd787a4-fb72-f8ad-9705-d6ba623552c2`)
 				}
 			},
 			func(err error) {
@@ -78,7 +85,13 @@ func TestGetLockID(t *testing.T) {
 		},
 		{
 			"bad json",
-			`{"ID:"ebd786a4-fb72-f8ad-9705-d6ba623552c2","Operation":"OperationTypeApply","Info":"","Who":"mark@fry","Version":"1.0.1","Created":"2021-07-12T17:29:27.616435429Z","Path":""}`,
+			`{"ID:"ebd786a4-fb72-f8ad-9705-d6ba623552c2",
+			  "Operation":"OperationTypeApply",
+			  "Info":"",
+			  "Who":"mark@fry",
+			  "Version":"1.0.1",
+			  "Created":"2021-07-12T17:29:27.616435429Z",
+			  "Path":""}`,
 			func(str string) {
 				if str != `` {
 					t.Errorf("got %v, expected %s", str, ``)
@@ -92,7 +105,12 @@ func TestGetLockID(t *testing.T) {
 		},
 		{
 			"no ID",
-			`{"Operation":"OperationTypeApply","Info":"","Who":"mark@fry","Version":"1.0.1","Created":"2021-07-12T17:29:27.616435429Z","Path":""}`,
+			`{"Operation":"OperationTypeApply",
+			  "Info":"",
+			  "Who":"mark@fry",
+			  "Version":"1.0.1",
+			  "Created":"2021-07-12T17:29:27.616435429Z",
+			  "Path":""}`,
 			func(str string) {
 				if str != `` {
 					t.Errorf("got %v, expected %s", str, ``)
