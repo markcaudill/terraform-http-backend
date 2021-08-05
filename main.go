@@ -76,7 +76,7 @@ func GetLockID(rawData []byte) (string, error) {
 	}
 	id, ok = parsedData["ID"]
 	if !ok {
-		return "", fmt.Errorf("Error parsing \"ID\" from %s", rawData)
+		return "", fmt.Errorf("error parsing \"ID\" from %s", rawData)
 	}
 	return id, nil
 }
