@@ -105,7 +105,7 @@ func stateHandler(db *sql.DB, schema *terraform.StateSchema) func(http.ResponseW
 			return
 		}
 		if currentState == nil {
-			currentState = &terraform.State{nil, nil}
+			currentState = &terraform.State{Data: nil, Lock: nil}
 		}
 
 		switch req.Method {
