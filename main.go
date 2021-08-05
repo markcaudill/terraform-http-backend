@@ -267,10 +267,10 @@ func main() {
 	listenAddr := net.TCPAddr{IP: listenIP, Port: listenPort}
 	schema = terraform.DefaultStateSchema()
 	db, err := openDB(dbFile, schema)
-	defer db.Close()
 	if err != nil {
 		log.Fatalf("openDB(%+v) = %v, %v", &schema, db, err)
 	}
+	defer db.Close()
 
 	// Start serving
 	log.Printf("Listening on %s", listenAddr.String())
