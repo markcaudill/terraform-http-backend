@@ -117,8 +117,8 @@ func TestGetLockID(t *testing.T) {
 				}
 			},
 			func(err error) {
-				if !strings.Contains(err.Error(), `Error parsing "ID" from`) {
-					t.Errorf(`got %v, expected "Error parsing "ID" from"`, err)
+				if !strings.Contains(err.Error(), `error parsing "ID" from`) {
+					t.Errorf(`got %v, expected "error parsing "ID" from"`, err)
 				}
 			},
 		},
