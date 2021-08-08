@@ -284,10 +284,10 @@ func TestHTTPHandlers(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			db, err := openDB(tc.dbPath, tc.schema)
-			defer db.Close()
 			if err != nil {
 				t.Fatalf("openDB(): got %v, expected nil", err)
 			}
+			defer db.Close()
 			err = tc.dbSetup(db)
 			if err != nil {
 				t.Fatalf("dbSetup(): got %v, expected nil", err)
